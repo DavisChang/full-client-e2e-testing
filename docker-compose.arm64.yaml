@@ -1,0 +1,40 @@
+# Docker Compose Override for ARM64 (Apple Silicon)
+# 
+# 使用方式:
+#   docker-compose -f docker-compose.yaml -f docker-compose.arm64.yaml up -d
+#
+# 或創建環境變數:
+#   export COMPOSE_FILE=docker-compose.yaml:docker-compose.arm64.yaml
+#   docker-compose up -d
+
+services:
+  # 覆蓋 selenium-chrome 使用 ARM64 鏡像
+  selenium-chrome:
+    image: seleniarm/standalone-chromium:latest
+    platform: linux/arm64
+
+  # 覆蓋 selenium-firefox 使用 ARM64 鏡像
+  selenium-firefox:
+    image: seleniarm/standalone-firefox:latest
+    platform: linux/arm64
+
+  # Grid Hub (ARM64 支持)
+  selenium-hub:
+    image: seleniarm/hub:latest
+    platform: linux/arm64
+
+  # Chrome Node (ARM64)
+  chrome-node:
+    image: seleniarm/node-chromium:latest
+    platform: linux/arm64
+
+  # Firefox Node (ARM64)
+  firefox-node:
+    image: seleniarm/node-firefox:latest
+    platform: linux/arm64
+
+  # Edge 在 ARM64 上不可用，移除該服務
+  edge-node:
+    deploy:
+      replicas: 0  # 禁用 Edge node
+

@@ -1,0 +1,44 @@
+{
+  "name": "full-client-e2e-testing",
+  "version": "1.0.0",
+  "description": "Full-featured cross-platform E2E testing framework supporting Web, Android, Windows, and macOS",
+  "type": "module",
+  "keywords": [
+    "e2e",
+    "testing",
+    "automation",
+    "robot-framework",
+    "appium",
+    "selenium",
+    "cross-platform",
+    "web-testing",
+    "mobile-testing",
+    "desktop-testing"
+  ],
+  "license": "MIT",
+  "author": "Davis Chang",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/full-client-e2e-testing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/full-client-e2e-testing/issues"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/full-client-e2e-testing#readme",
+  "scripts": {
+    "lint": "robotidy --check tests resources",
+    "test": "node tools/run-tests.mjs",
+    "test:web": "npm run test -- --platform web",
+    "test:android": "npm run test -- --platform android",
+    "test:mac": "npm run test -- --platform mac",
+    "test:windows": "npm run test -- --platform windows"
+  },
+  "devDependencies": {
+    "zx": "^7.2.3",
+    "yargs": "^17.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

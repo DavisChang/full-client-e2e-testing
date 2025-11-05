@@ -1,0 +1,9 @@
+robotframework==6.1.1
+robotframework-seleniumlibrary==6.2.0
+robotframework-requests==0.9.6
+robotframework-jsonlibrary==0.5
+selenium==4.18.1
+Appium-Python-Client==3.1.1
+python-dotenv==1.0.1
+PyYAML==6.0.1
+pytest==8.4.2

@@ -1,0 +1,11 @@
+browser: macapp
+remote_url: ${ENV:MAC_REMOTE_URL:-http://127.0.0.1:4723/wd/hub}
+capabilities:
+  platformName: mac
+  automationName: mac2
+  appium:bundleId: ${ENV:MAC_BUNDLE_ID:-com.apple.calculator}
+  appium:arguments: []
+  appium:newCommandTimeout: 120
+timeouts:
+  implicit: 5
+  explicit: 20

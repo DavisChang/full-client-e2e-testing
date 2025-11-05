@@ -1,0 +1,133 @@
+# Docker Compose for E2E Testing
+# 跨平台支持: macOS (ARM64/Intel), Windows, Linux
+# 
+# 使用方式:
+#   macOS (Apple Silicon):  docker-compose -f docker-compose.yaml -f docker-compose.arm64.yaml up -d
+#   Windows/Intel Mac:      docker-compose up -d
+
+services:
+  # Selenium Standalone Chrome (x86_64 - Windows/Intel Mac/Linux)
+  selenium-chrome:
+    image: selenium/standalone-chrome:latest
+    container_name: selenium-chrome
+    ports:
+      - "4444:4444"      # Selenium WebDriver 端口
+      - "7900:7900"      # VNC 端口 (可視化瀏覽器)
+    shm_size: 2gb        # 共享內存大小
+    environment:
+      SE_OPTS: "--log-level INFO"
+      SE_VNC_NO_PASSWORD: "1"
+      SE_NODE_MAX_SESSIONS: 4
+      SE_NODE_SESSION_TIMEOUT: 300
+    volumes:
+      - /dev/shm:/dev/shm  # 共享內存掛載
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Selenium Standalone Firefox (可選)
+  selenium-firefox:
+    image: selenium/standalone-firefox:latest
+    container_name: selenium-firefox
+    ports:
+      - "4445:4444"      # Firefox WebDriver 端口
+      - "7901:7900"      # Firefox VNC 端口
+    shm_size: 2gb
+    environment:
+      SE_OPTS: "--log-level INFO"
+      SE_VNC_NO_PASSWORD: "1"
+      SE_NODE_MAX_SESSIONS: 4
+      SE_NODE_SESSION_TIMEOUT: 300
+    volumes:
+      - /dev/shm:/dev/shm
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - firefox  # 使用 --profile firefox 啟動
+
+  # Selenium Grid Hub + Nodes (進階用法)
+  selenium-hub:
+    image: selenium/hub:latest
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"      # Event Bus Publish
+      - "4443:4443"      # Event Bus Subscribe
+      - "4446:4444"      # Grid UI & WebDriver
+    environment:
+      SE_OPTS: "--log-level INFO"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    profiles:
+      - grid  # 使用 --profile grid 啟動 Grid 模式
+
+  chrome-node:
+    image: selenium/node-chrome:latest
+    container_name: chrome-node
+    depends_on:
+      - selenium-hub
+    shm_size: 2gb
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 2
+    volumes:
+      - /dev/shm:/dev/shm
+    restart: unless-stopped
+    profiles:
+      - grid
+
+  firefox-node:
+    image: selenium/node-firefox:latest
+    container_name: firefox-node
+    depends_on:
+      - selenium-hub
+    shm_size: 2gb
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 2
+    volumes:
+      - /dev/shm:/dev/shm
+    restart: unless-stopped
+    profiles:
+      - grid
+
+  edge-node:
+    image: selenium/node-edge:latest
+    container_name: edge-node
+    depends_on:
+      - selenium-hub
+    shm_size: 2gb
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 2
+    volumes:
+      - /dev/shm:/dev/shm
+    restart: unless-stopped
+    profiles:
+      - grid
+      - edge  # Windows 用戶特別需要
+
+# 網絡配置
+networks:
+  default:
+    name: full-client-e2e
+    driver: bridge

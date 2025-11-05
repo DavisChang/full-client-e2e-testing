@@ -1,0 +1,13 @@
+browser: chrome
+remote_url: ${ENV:SELENIUM_REMOTE_URL:-http://127.0.0.1:4444/wd/hub}
+capabilities:
+  browserName: chrome
+  platformName: ANY
+  'goog:chromeOptions':
+    args:
+      - --window-size=1440,900
+      - --disable-gpu
+timeouts:
+  implicit: 5
+  explicit: 15
+  page_load: 30

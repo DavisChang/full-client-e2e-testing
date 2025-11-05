@@ -1,0 +1,75 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Test reports and outputs
+reports/
+log.html
+output.xml
+report.html
+*.log
+
+# Environment variables
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS - macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# OS - Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+
+# Debug files
+debug_*.xml
+calculator_ui_structure.xml
+
+# Test screenshots and images
+*.png
+*.jpg
+*.jpeg
+selenium-screenshot*.png
+google*.png
+screenshot*.png
+
+# Scripts and resources cache
+scripts/__pycache__/
+resources/**/__pycache__/
+
+# Selenium and WebDriver
+.selenium/
+*.crx
+chromedriver
+geckodriver
+selenium-server-*.jar
+webdriver/
+
+# Appium
+appium*.log
+
+# Build artifacts
+dist/
+build/
+*.egg-info/

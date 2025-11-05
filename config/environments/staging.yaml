@@ -1,0 +1,21 @@
+name: staging
+description: Staging smoke tests
+base_url: ${ENV:STAGING_WEB_BASE_URL:-https://staging.example.com}
+api_base_url: ${ENV:STAGING_API_BASE_URL:-https://api.staging.example.com}
+default_user_role: standard
+credentials:
+  standard:
+    username: ${ENV:STAGING_STANDARD_USER:-staging@example.com}
+    password: ${ENV:STAGING_STANDARD_PASS:-Staging123!}
+  admin:
+    username: ${ENV:STAGING_ADMIN_USER:-staging-admin@example.com}
+    password: ${ENV:STAGING_ADMIN_PASS:-StagingAdm1n!}
+timeouts:
+  implicit: 5
+  explicit: 20
+  page_load: 40
+remote_endpoints:
+  web: ${ENV:STAGING_SELENIUM_GRID:-https://selenium.staging.example.com/wd/hub}
+  android: ${ENV:STAGING_APPIUM_ANDROID:-https://appium.staging.example.com/wd/hub}
+  mac: ${ENV:STAGING_APPIUM_MAC:-https://appium-mac.staging.example.com/wd/hub}
+  windows: ${ENV:STAGING_WINAPPDRIVER:-https://winappdriver.staging.example.com}

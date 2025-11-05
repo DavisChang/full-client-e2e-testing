@@ -1,0 +1,21 @@
+name: dev
+description: Local smoke tests
+base_url: ${ENV:DEV_WEB_BASE_URL:-https://dev.example.com}
+api_base_url: ${ENV:DEV_API_BASE_URL:-https://api.dev.example.com}
+default_user_role: standard
+credentials:
+  standard:
+    username: ${ENV:DEV_STANDARD_USER:-demo@example.com}
+    password: ${ENV:DEV_STANDARD_PASS:-Passw0rd!}
+  admin:
+    username: ${ENV:DEV_ADMIN_USER:-admin@example.com}
+    password: ${ENV:DEV_ADMIN_PASS:-Adm1nPass!}
+timeouts:
+  implicit: 5
+  explicit: 15
+  page_load: 30
+remote_endpoints:
+  web: ${ENV:DEV_SELENIUM_GRID:-http://127.0.0.1:4444/wd/hub}
+  android: ${ENV:DEV_APPIUM_ANDROID:-http://127.0.0.1:4723/wd/hub}
+  mac: ${ENV:DEV_APPIUM_MAC:-http://127.0.0.1:4723/wd/hub}
+  windows: ${ENV:DEV_WINAPPDRIVER:-http://127.0.0.1:4723}

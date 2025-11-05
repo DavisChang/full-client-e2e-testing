@@ -1,0 +1,10 @@
+browser: winapp
+remote_url: ${ENV:WIN_REMOTE_URL:-http://127.0.0.1:4723}
+capabilities:
+  platformName: Windows
+  deviceName: WindowsPC
+  app: ${ENV:WINDOWS_APP_ID:-Microsoft.WindowsCalculator_8wekyb3d8bbwe!App}
+  newCommandTimeout: 120
+timeouts:
+  implicit: 5
+  explicit: 20

@@ -1,0 +1,12 @@
+browser: androidapp
+remote_url: ${ENV:ANDROID_REMOTE_URL:-http://127.0.0.1:4723/wd/hub}
+capabilities:
+  platformName: Android
+  automationName: UiAutomator2
+  deviceName: ${ENV:ANDROID_DEVICE:-emulator-5554}
+  appPackage: ${ENV:ANDROID_APP_PACKAGE:-com.example.dev}
+  appActivity: ${ENV:ANDROID_APP_ACTIVITY:-.ui.LoginActivity}
+  noReset: true
+timeouts:
+  implicit: 10
+  explicit: 25

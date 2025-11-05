@@ -1,0 +1,54 @@
+name: robot-e2e
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: web
+            env: dev
+          - platform: android
+            env: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+
+      - name: Launch Selenium & Appium
+        run: |
+          docker compose up -d selenium-hub chrome firefox appium
+          sleep 20
+
+      - name: Run Robot Tests
+        run: |
+          robot \
+            --variable ENV:${{ matrix.env }} \
+            --variable PLATFORM:${{ matrix.platform }} \
+            --variable USER_ROLE:standard \
+            -d reports/${{ matrix.platform }} \
+            tests/${{ matrix.platform }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: robot-${{ matrix.platform }}
+          path: reports/${{ matrix.platform }}
+
+      - name: Tear down services
+        if: always()
+        run: docker compose down
