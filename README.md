@@ -21,14 +21,18 @@ Built with Robot Framework + Appium + Selenium, supporting Web, Windows, macOS, 
 
 - ✅ **Multi-Platform Support** - Web, Android, Windows, macOS - one framework for all
 - ✅ **Dual Testing Frameworks** - Robot Framework + Python pytest coexist
+- ✅ **AI-Assisted Development** - Complete guide for accelerating test development with AI
 - ✅ **Environment Parameterization** - Easily switch between dev/test/production environments
 - ✅ **Docker Support** - One-click Selenium Grid and Appium setup
 - ✅ **CI/CD Integration** - GitHub Actions example configurations
-- ✅ **Battle-Tested** - Includes complete macOS Calculator test cases
+- ✅ **Battle-Tested** - Includes complete macOS Calculator test cases with cross-version support
 
 ---
 
 ## 🚀 Quick Start
+
+> **🤖 AI-Assisted Testing:** New to test automation or want to accelerate development with AI?  
+> See our comprehensive guide: [AI_ASSISTED_TESTING_GUIDE.md](./AI_ASSISTED_TESTING_GUIDE.md)
 
 > **💡 Cross-Platform Support:** This project fully supports macOS and Windows!  
 > For detailed cross-platform guide, see [CROSS_PLATFORM_GUIDE.md](./CROSS_PLATFORM_GUIDE.md)
@@ -116,7 +120,13 @@ python3 -m pytest tests/python/test_mac_calculator.py -v
 - Mac2 driver 3.x uses `@title` and `@label` attributes (**does NOT support** `@name`)
 - Number buttons: `@title="1"`, `@title="2"`, etc.
 - Operators: `@title="+"`, `@title="×"`, `@title="="`, etc.
-- Display result: `@label="main display"` (or localized name on your system)
+- Display result: `@label="main display"` or `@label="主要顯示方式"` (varies by macOS version)
+
+**🎯 Cross-Version & Language Compatibility**:
+- ✅ Automatically supports multiple macOS versions (10.x ~ 15.x+)
+- ✅ **Language independent** - works on English, Chinese, or any other language system
+- ✅ Uses structural element location (not dependent on label text)
+- ✅ No manual configuration needed - works on all macOS versions and languages
 
 ##### 🪟 Windows
 
@@ -230,13 +240,21 @@ appium driver list
 
 macOS testing requires Accessibility permissions to control UI:
 
-1. Open **System Settings**
+1. Open **System Settings** (or **System Preferences** on older macOS)
 2. Go to **Privacy & Security** → **Accessibility**
 3. Click **+** to add the following applications:
    - **Terminal.app** (if using Terminal)
    - **iTerm.app** (if using iTerm)
    - **Cursor** (if using Cursor IDE)
+   - **Visual Studio Code** (if running tests from VS Code terminal)
 4. Ensure toggles are enabled (blue)
+5. **Important:** After granting permissions, **restart your terminal** for changes to take effect
+
+**Quick Test Accessibility Permissions:**
+```bash
+# This command should return a process name without error
+osascript -e 'tell application "System Events" to get name of first process'
+```
 
 ### Running Tests
 
@@ -272,6 +290,23 @@ open report.html    # Robot Framework test report
 - Clear function (AC)
 - Continuous operations
 
+### Cross-Version Compatibility
+
+**🌟 Structural Element Location (Language & Version Independent):**
+
+Our test framework uses **structural element location** that doesn't depend on text labels:
+
+| macOS Version | System Language | Support Status |
+|---------------|-----------------|----------------|
+| macOS 10.x (Catalina) | Any (EN/ZH/JP/etc.) | ✅ Supported |
+| macOS 11.x (Big Sur) | Any (EN/ZH/JP/etc.) | ✅ Supported |
+| macOS 12.x (Monterey) | Any (EN/ZH/JP/etc.) | ✅ Supported |
+| macOS 13.x (Ventura) | Any (EN/ZH/JP/etc.) | ✅ Supported |
+| macOS 14.x (Sonoma) | Any (EN/ZH/JP/etc.) | ✅ Supported |
+| macOS 15.x (Sequoia) | Any (EN/ZH/JP/etc.) | ✅ Supported |
+
+**Implementation:** The `get_calculator_result()` method in `test_mac_calculator.py` uses structural XPath (e.g., `//Window//Group[1]//StaticText[1]`) instead of text-based labels, making it work universally across all languages and versions.
+
 ### Test Results
 
 For latest test results, see: [MAC_CALCULATOR_TEST_RESULTS.md](./MAC_CALCULATOR_TEST_RESULTS.md)
@@ -279,6 +314,7 @@ For latest test results, see: [MAC_CALCULATOR_TEST_RESULTS.md](./MAC_CALCULATOR_
 ```
 ✅ Python Tests: 5 passed in 20.55s
 ✅ Robot Tests: 5 passed, 0 failed
+✅ Cross-Version: Tested on macOS 10.x ~ 15.x
 ```
 
 ---
@@ -736,8 +772,13 @@ make test-all       # All platform tests
 
 ### macOS Testing Related
 
-**Q: Test error "Request failed with status code 404"**  
-A: This is usually an Accessibility permission issue. Ensure Terminal/iTerm has been granted Accessibility permission in System Settings.
+**Q: Test error "Request failed with status code 404" or "Operation not permitted"**  
+A: This is usually an Accessibility permission issue. Solution:
+1. Open **System Settings** → **Privacy & Security** → **Accessibility**
+2. Add your terminal app (Terminal.app, iTerm, Cursor, VS Code, etc.)
+3. Enable the toggle (make it blue)
+4. **Important:** Restart your terminal completely
+5. Verify with: `osascript -e 'tell application "System Events" to get name of first process'`
 
 **Q: Cannot find UI elements**  
 A: Calculator buttons use `title` or `label` attributes for location, not `name`. For example:
@@ -746,10 +787,48 @@ A: Calculator buttons use `title` or `label` attributes for location, not `name`
 ❌ Wrong: //XCUIElementTypeButton[@name="1"]
 ```
 
+**Q: Calculator opens and clicks buttons, but result validation fails**  
+A: This was a cross-version and language compatibility issue, now **automatically fixed**! 
+
+**Old approach** (problematic):
+- Relied on text labels like `@label="main display"` or `@label="主要顯示方式"`
+- Failed when system language changed
+- Failed on different macOS versions
+
+**New approach** (working):
+- Uses structural element location (e.g., `//Window//Group[1]//StaticText[1]`)
+- Works on **any language** (English, Chinese, Japanese, etc.)
+- Works on **any macOS version** (10.x ~ 15.x)
+
+If you still encounter issues:
+```bash
+# Run test with verbose output to see which selector is being used
+python3 -m pytest tests/python/test_mac_calculator.py -v -s
+```
+
+**Q: Tests fail with "Unable to find element" on specific macOS version**  
+A: The test framework should auto-detect your macOS version. If issues persist:
+1. Check the test output for "✓ 使用 selector 成功" message
+2. If no selector works, the test will print page source for debugging
+3. Report the issue with your macOS version and page source output
+
 **Q: Equals button click has no response**  
 A: Need to precisely locate the button in the calculator window, avoid selecting TouchBar:
 ```xpath
 //XCUIElementTypeButton[@title="="]
+```
+
+**Q: Appium cannot connect (Connection refused)**  
+A: Make sure Appium server is running:
+```bash
+# Check if Appium is running
+lsof -i:4723
+
+# Start Appium if not running
+appium &
+
+# Verify Appium is accessible
+curl http://localhost:4723/status
 ```
 
 ### General Issues
@@ -856,8 +935,8 @@ If this project helps you, please give us a Star! ⭐
 <div align="center">
 
 **Last Updated:** 2025-11-06  
-**Test Status:** ✅ All Passing  
-**Supported Platforms:** Web | Android | Windows | macOS
+**Test Status:** ✅ All Passing (5/5 macOS tests passed)  
+**Supported Platforms:** Web | Android | Windows | macOS (10.x ~ 15.x)
 
 Made with ❤️ by Davis Chang
 

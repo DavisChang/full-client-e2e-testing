@@ -30,6 +30,41 @@ class TestMacCalculator:
         if self.driver:
             self.driver.quit()
 
+    def get_calculator_result(self):
+        """
+        獲取計算機結果 - 使用結構定位，不依賴語言設置
+        支援 macOS 10.x ~ 15.x，中文、英文、其他語言系統
+        """
+        # 使用結構定位策略，完全不依賴 label 的語言
+        selectors = [
+            # 策略1：通過結構層次 - Calculator window 下第一個 Group 下的 StaticText（最穩定）
+            '//XCUIElementTypeWindow[@title="Calculator"]//XCUIElementTypeGroup[1]//XCUIElementTypeStaticText[1]',
+            
+            # 策略2：找有 value 屬性的 enabled StaticText（通用）
+            '//XCUIElementTypeWindow[@title="Calculator"]//XCUIElementTypeStaticText[@enabled="true"][1]',
+            
+            # 策略3：通過特定 Group identifier（如果可用）
+            '//XCUIElementTypeGroup[@identifier="_NS:11"]//XCUIElementTypeStaticText',
+            
+            # Fallback：如果 Calculator window title 在某些語言中不同
+            '//XCUIElementTypeWindow[1]//XCUIElementTypeGroup[1]//XCUIElementTypeStaticText[1]',
+        ]
+        
+        for selector in selectors:
+            try:
+                result = self.driver.find_element(By.XPATH, selector)
+                result_text = result.get_attribute("value")
+                if result_text and result_text.strip():
+                    print(f"✓ 使用結構定位成功: {selector[:70]}...")
+                    return result_text
+            except Exception:
+                continue
+        
+        # 如果所有策略都失敗，印出 page source 以便 debug
+        print("⚠️  無法找到結果元素，印出 page source 以供 debug：")
+        print(self.driver.page_source)
+        raise Exception("無法找到計算機結果顯示元素")
+
     def test_calculator_addition_1_plus_2(self):
         """測試計算機加法功能：1 + 2 = 3"""
         try:
@@ -65,11 +100,8 @@ class TestMacCalculator:
             # 等待計算完成
             time.sleep(1)
 
-            # 驗證結果 - 查找顯示結果的 StaticText (label="主要顯示方式")
-            result = self.driver.find_element(
-                By.XPATH, '//XCUIElementTypeStaticText[@label="主要顯示方式"]'
-            )
-            result_text = result.get_attribute("value")
+            # 使用新的方法獲取結果
+            result_text = self.get_calculator_result()
 
             assert (
                 "3" in result_text
@@ -111,10 +143,8 @@ class TestMacCalculator:
 
             time.sleep(1)
 
-            result = self.driver.find_element(
-                By.XPATH, '//XCUIElementTypeStaticText[@label="主要顯示方式"]'
-            )
-            result_text = result.get_attribute("value")
+            # 使用新的方法獲取結果
+            result_text = self.get_calculator_result()
 
             assert "10" in result_text, f"Expected '10', got '{result_text}'"
 
@@ -153,10 +183,8 @@ class TestMacCalculator:
 
             time.sleep(1)
 
-            result = self.driver.find_element(
-                By.XPATH, '//XCUIElementTypeStaticText[@label="主要顯示方式"]'
-            )
-            result_text = result.get_attribute("value")
+            # 使用新的方法獲取結果
+            result_text = self.get_calculator_result()
 
             assert "10" in result_text, f"Expected '10', got '{result_text}'"
 
@@ -195,10 +223,8 @@ class TestMacCalculator:
 
             time.sleep(1)
 
-            result = self.driver.find_element(
-                By.XPATH, '//XCUIElementTypeStaticText[@label="主要顯示方式"]'
-            )
-            result_text = result.get_attribute("value")
+            # 使用新的方法獲取結果
+            result_text = self.get_calculator_result()
 
             assert "20" in result_text, f"Expected '20', got '{result_text}'"
 
